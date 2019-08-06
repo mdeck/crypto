@@ -42,7 +42,7 @@ import (
 // The returned Listener also enables TCP keep-alives on the accepted
 // connections. The returned *tls.Conn are returned before their TLS
 // handshake has completed.
-func NewListener(domains ...string) net.Listener {
+func NewListener(port string, domains ...string) net.Listener {
 	m := &Manager{
 		Prompt: AcceptTOS,
 	}
@@ -55,7 +55,7 @@ func NewListener(domains ...string) net.Listener {
 	} else {
 		m.Cache = DirCache(dir)
 	}
-	return m.Listener()
+	return m.Listener(port)
 }
 
 // Listener listens on the standard TLS port (443) on all interfaces
@@ -70,12 +70,12 @@ func NewListener(domains ...string) net.Listener {
 //
 // Unlike NewListener, it is the caller's responsibility to initialize
 // the Manager m's Prompt, Cache, HostPolicy, and other desired options.
-func (m *Manager) Listener() net.Listener {
+func (m *Manager) Listener(port string) net.Listener {
 	ln := &listener{
 		m:    m,
 		conf: m.TLSConfig(),
 	}
-	ln.tcpListener, ln.tcpListenErr = net.Listen("tcp", ":443")
+	ln.tcpListener, ln.tcpListenErr = net.Listen("tcp", port) //":443")
 	return ln
 }
 
